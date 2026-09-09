@@ -2300,6 +2300,24 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)stopVoice69
 CRAFT.vinyl60.name='Goldberg Aria · gold label';CRAFT.vinyl61.name='Goldberg Variation 1 · blue label';CRAFT.vinyl62.name='Goldberg Variation 5 · rose label';
 
 piano.timer=setInterval(schedulePiano,250);
+// Bilgin Beta: abandoned inflatable paddling pool.
+let bilginPool=null;
+function buildBilginPool(){
+ const g=new THREE.Group();g.name='Old patched inflatable kids pool';g.position.set(-13,0,23);root.add(g);
+ const vinyl=[0x889da0,0xd0b979,0xa78c89].map(c=>new THREE.MeshStandardMaterial({color:c,roughness:.83}));
+ for(let i=0;i<3;i++){const m=new THREE.Mesh(new THREE.TorusGeometry(3,.19,10,64),vinyl[i]);m.rotation.x=-Math.PI/2;m.position.y=.2+i*.28;m.name='Inflatable vinyl rim';m.castShadow=true;m.receiveShadow=true;g.add(m);}
+ const floor=new THREE.Mesh(new THREE.CircleGeometry(3,64),new THREE.MeshStandardMaterial({color:0x596c54,roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.y=.035;floor.name='Pool liner';g.add(floor);
+ // A few seams and mismatched repair patches make it look used, without extra textures.
+ for(let i=0;i<10;i++){const a=i*2.399;const patch=new THREE.Mesh(new THREE.BoxGeometry(.29,.16,.035),new THREE.MeshStandardMaterial({color:i%2?0x696456:0xb5aa80,roughness:1}));patch.position.set(Math.sin(a)*3.18,.22+(i%3)*.28,Math.cos(a)*3.18);patch.rotation.y=a;patch.rotation.z=.12*Math.sin(i);g.add(patch);}
+ registerSolid62(g);
+ const water=new THREE.Mesh(new THREE.CircleGeometry(2.81,64),new THREE.MeshStandardMaterial({color:0x647f68,roughness:.22,metalness:.15,transparent:true,opacity:.79,depthWrite:false}));water.rotation.x=-Math.PI/2;water.position.set(-13,.59,23);water.name='Murky pool water';root.add(water);
+ const ripples=[];for(let i=0;i<4;i++){const r=new THREE.Mesh(new THREE.RingGeometry(.92,1,40),new THREE.MeshBasicMaterial({color:0xc8d6b5,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));r.rotation.x=-Math.PI/2;r.visible=false;root.add(r);ripples.push({m:r,age:2});}
+ bilginPool={owner:root,g,water,ripples,clock:0,wet:false,trail:0};
+}
+const oldStartBilgin=startScavenge;startScavenge=function(){oldStartBilgin();buildBilginPool();};
+const oldVolumeBilgin=waterVolume66;waterVolume66=function(p){const b=bilginPool;if(b&&b.owner===root&&Math.hypot(p.x+13,p.z-23)<2.81)return b.water;return oldVolumeBilgin(p);};
+const oldWaterBilgin=waterTick65;waterTick65=function(dt){oldWaterBilgin(dt);const b=bilginPool;if(!b||b.owner!==root||!rat)return;b.clock+=dt;b.water.position.y=.59+Math.sin(b.clock*1.8)*.008;const p=rat.position,inside=Math.hypot(p.x+13,p.z-23)<2.75&&p.y<b.water.position.y;const entered=inside&&!b.wet;b.trail-=dt;if(inside&&(entered||(rat.userData.vel>.08&&b.trail<=0))){b.trail=.45;const r=b.ripples.reduce((a,c)=>a.age>c.age?a:c);r.age=0;r.m.position.set(p.x,b.water.position.y+.012,p.z);r.m.visible=true;if(entered&&voiceOn)sfx.step('water');}b.wet=inside;for(const r of b.ripples){r.age+=dt;r.m.visible=r.age<1.3;if(r.m.visible){r.m.scale.setScalar(.07+r.age*.55);r.m.material.opacity=(1-r.age/1.3)*.42;r.m.position.y=b.water.position.y+.012;}}};
+
 // All declarations and extension state are ready before constructing the title.
 startTitle();
 requestAnimationFrame(loop);
