@@ -1,0 +1,12 @@
+{
+  "name": "wet-whiskers",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Wet Whiskers static Three.js game",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "dev": "node scripts/serve.mjs",
+    "check": "node scripts/check.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

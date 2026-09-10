@@ -1,7 +1,7 @@
 import bpy,math,random,numpy as np,json
 from mathutils import Vector
 from pathlib import Path
-P=Path(__file__).resolve().parent;random.seed(22);bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
+P=Path(__file__).resolve().parents[2]/'generated'/'junkyard-build31';P.mkdir(parents=True,exist_ok=True);random.seed(22);bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
 def V(x,y,z):return (x,-z,y)
 def mat(n,col,texture=None,emit=0):
  m=bpy.data.materials.new(n);m.diffuse_color=(*col,1);m.use_nodes=True;p=m.node_tree.nodes.get('Principled BSDF');p.inputs['Base Color'].default_value=(*col,1);p.inputs['Roughness'].default_value=.88
